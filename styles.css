@@ -1,0 +1,277 @@
+:root {
+    --fondo: #0f1115;
+    --panel: #1c1f26;
+    --card: #222632;
+    --texto: #e8e8e8;
+    --detalle: #ff6b3d;
+    --detalle-claro: #ffa24d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--fondo);
+    color: var(--texto);
+}
+
+a {
+    color: var(--detalle-claro);
+    text-decoration: none;
+}
+
+.barra-superior {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #11141b;
+    border-bottom: 1px solid #2b2f3a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.menu a {
+    margin-left: 1rem;
+}
+
+.saludo {
+    margin-left: 1rem;
+    color: var(--detalle);
+}
+
+.contenedor {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.seccion {
+    margin-bottom: 3rem;
+}
+
+.grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card {
+    background: var(--card);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--detalle-claro);
+}
+
+.card button {
+    margin-top: 1rem;
+    background: var(--detalle);
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    color: #111;
+    cursor: pointer;
+}
+
+.formulario {
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    background: var(--card);
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.formulario input {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #0d0f14;
+    color: var(--texto);
+}
+
+.formulario button {
+    padding: 0.7rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--detalle);
+    color: #111;
+    cursor: pointer;
+}
+
+.mensaje {
+    padding: 0.8rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.mensaje.ok {
+    background: rgba(44, 155, 84, 0.2);
+    border: 1px solid #2c9b54;
+}
+
+.mensaje.error {
+    background: rgba(200, 74, 74, 0.2);
+    border: 1px solid #c84a4a;
+}
+
+.texto-suave {
+    color: #a1a1a1;
+}
+
+.pie {
+    text-align: center;
+    padding: 1.5rem;
+    border-top: 1px solid #2b2f3a;
+}
+
+.boton-carrito {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    background: var(--detalle);
+    color: #111;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.panel-carrito {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 360px;
+    height: 100%;
+    background: var(--panel);
+    padding: 1.5rem;
+    transition: right 0.3s ease;
+    z-index: 15;
+    overflow-y: auto;
+    box-shadow: -6px 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.panel-carrito.abierto {
+    right: 0;
+}
+
+.panel-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.boton-cerrar {
+    background: transparent;
+    border: none;
+    color: var(--detalle-claro);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.lista-carrito {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #2b2f3a;
+}
+
+.etiqueta {
+    display: inline-block;
+    background: #2a2f3c;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    margin-left: 0.4rem;
+}
+
+.acciones-item {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.acciones-item button {
+    background: #2a2f3c;
+    border: none;
+    color: var(--texto);
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.panel-total {
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.form-vaciar button,
+.form-comprar button,
+.boton-login,
+.boton-secundario {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--detalle);
+    color: #111;
+    cursor: pointer;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tabla th,
+.tabla td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #2b2f3a;
+    text-align: left;
+}
+
+.fila-acciones {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.acciones-carrito {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .panel-carrito {
+        width: 90%;
+    }
+}
