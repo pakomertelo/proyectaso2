@@ -264,6 +264,14 @@ a {
     gap: 0.4rem;
 }
 
+.fila-acciones form {
+    margin: 0;
+}
+
+.fila-acciones .boton-secundario {
+    margin-top: 0;
+}
+
 .acciones-carrito {
     margin-top: 1.5rem;
     display: flex;

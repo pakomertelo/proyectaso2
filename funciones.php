@@ -13,6 +13,11 @@ function estaLogeado()
     return isset($_SESSION['idUsuario']);
 }
 
+function esAdmin()
+{
+    return isset($_SESSION['nombreUsuario']) && $_SESSION['nombreUsuario'] === 'admin';
+}
+
 function redirigir($ruta)
 {
     header("Location: $ruta");

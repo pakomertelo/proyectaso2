@@ -46,6 +46,9 @@ if (!empty($idsBebidas)) {
     <nav class="menu">
         <a href="index.php">Inicio</a>
         <a href="mis_compras.php">Mis compras</a>
+        <?php if (estaLogeado() && esAdmin()) : ?>
+            <a href="admin_productos.php">Administrar</a>
+        <?php endif; ?>
         <?php if (estaLogeado()) : ?>
             <span class="saludo">Hola, <?php echo limpiar($_SESSION['nombreUsuario']); ?></span>
             <a href="logout.php">Salir</a>
