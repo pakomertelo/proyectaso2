@@ -1,6 +1,6 @@
 </main>
 <footer class="pie">
-    <p>tienda zombies - proyecto daw</p>
+    <p>Tienda Chombis - Proyecto DSW por Elías y Pakonido</p>
 </footer>
 <script src="script.js"></script>
 </body>

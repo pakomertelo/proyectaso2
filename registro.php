@@ -15,15 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = trim($_POST['contrasena'] ?? '');
 
     if ($nombreUsuario === '' || strlen($nombreUsuario) < 3) {
-        $errores[] = 'el nombre de usuario es obligatorio y debe tener al menos 3 caracteres';
+        $errores[] = 'El nombre de usuario es obligatorio y debe tener al menos 3 caracteres';
     }
 
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errores[] = 'el email no es valido';
+        $errores[] = 'El email no es valido';
     }
 
     if ($contrasena === '' || strlen($contrasena) < 4) {
-        $errores[] = 'la contraseña debe tener al menos 4 caracteres';
+        $errores[] = 'La contraseña debe tener al menos 4 caracteres';
     }
 
     if (empty($errores)) {
@@ -32,13 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $existe = $stmt->fetch();
 
         if ($existe) {
-            $errores[] = 'ya existe un usuario con esos datos';
+            $errores[] = 'Ya existe un usuario con esos datos';
         } else {
             $stmt = $pdo->prepare('INSERT INTO Usuarios (nombreUsuario, email, contrasena) VALUES (?, ?, ?)');
             $stmt->execute([$nombreUsuario, $email, $contrasena]);
             $nombreUsuario = '';
             $email = '';
-            $mensajeOk = 'registro completado, ya puedes hacer login';
+            $mensajeOk = 'Registro completado, ya puedes hacer login';
         }
     }
 }
@@ -47,7 +47,7 @@ require 'header.php';
 ?>
 
 <section class="seccion">
-    <h1>registro</h1>
+    <h1>Registro</h1>
 
     <?php if (!empty($errores)) : ?>
         <div class="mensaje error">
@@ -64,16 +64,16 @@ require 'header.php';
     <?php endif; ?>
 
     <form method="post" class="formulario">
-        <label>nombre de usuario</label>
+        <label>Nombre de usuario</label>
         <input type="text" name="nombreUsuario" value="<?php echo limpiar($nombreUsuario); ?>" required>
 
-        <label>email</label>
+        <label>Email</label>
         <input type="email" name="email" value="<?php echo limpiar($email); ?>" required>
 
-        <label>contraseña</label>
+        <label>Contraseña</label>
         <input type="password" name="contrasena" required>
 
-        <button type="submit">registrarme</button>
+        <button type="submit">Registrarme</button>
     </form>
 </section>
 

@@ -21,18 +21,18 @@ require 'header.php';
 ?>
 
 <section class="seccion">
-    <h1>mis compras</h1>
+    <h1>Mis compras</h1>
 
     <?php if (empty($compras)) : ?>
-        <p class="texto-suave">aun no tienes compras</p>
+        <p class="texto-suave">Aún no tienes compras</p>
     <?php else : ?>
         <table class="tabla">
             <thead>
                 <tr>
-                    <th>producto</th>
-                    <th>tipo</th>
-                    <th>cantidad</th>
-                    <th>fecha</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
                 </tr>
             </thead>
             <tbody>

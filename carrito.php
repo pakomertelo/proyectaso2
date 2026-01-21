@@ -41,18 +41,18 @@ require 'header.php';
 ?>
 
 <section class="seccion">
-    <h1>carrito completo</h1>
+    <h1>Carrito completo</h1>
 
     <?php if (empty($carrito)) : ?>
-        <p class="texto-suave">no hay items en el carrito</p>
+        <p class="texto-suave">No hay items en el carrito</p>
     <?php else : ?>
         <table class="tabla">
             <thead>
                 <tr>
-                    <th>producto</th>
-                    <th>tipo</th>
-                    <th>cantidad</th>
-                    <th>acciones</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,15 +94,15 @@ require 'header.php';
         <div class="acciones-carrito">
             <form method="post">
                 <input type="hidden" name="accion" value="vaciar">
-                <button type="submit">vaciar carrito</button>
+                <button type="submit">Vaciar carrito</button>
             </form>
 
             <?php if (estaLogeado()) : ?>
                 <form method="post" action="comprar.php">
-                    <button type="submit">comprar</button>
+                    <button type="submit">Comprar</button>
                 </form>
             <?php else : ?>
-                <a href="login.php" class="boton-login">login para comprar</a>
+                <a href="login.php" class="boton-login">Login para comprar</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>

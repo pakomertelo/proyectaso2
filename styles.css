@@ -275,3 +275,63 @@ a {
         width: 90%;
     }
 }
+
+.card img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.grid {
+    align-items: stretch;
+}
+
+
+.card{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card form{
+    margin-top: auto;            
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+
+.card img{
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+
+.card button{
+    margin-top: auto;            
+    width: 100%;
+}
+
+#btnTop {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: #333;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+}
+
+#btnTop:hover {
+    background: #555;
+}

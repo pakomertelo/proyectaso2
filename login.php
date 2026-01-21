@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = trim($_POST['contrasena'] ?? '');
 
     if ($nombreUsuario === '' || strlen($nombreUsuario) < 3) {
-        $errores[] = 'el nombre de usuario es obligatorio';
+        $errores[] = 'El nombre de usuario es obligatorio';
     }
 
     if ($contrasena === '' || strlen($contrasena) < 4) {
-        $errores[] = 'la contraseña es obligatoria';
+        $errores[] = 'La contraseña es obligatoria';
     }
 
     if (empty($errores)) {
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setcookie('recordarUsuario', $usuario['nombreUsuario'], time() + 60 * 60 * 24 * 7, '/');
             redirigir('index.php');
         } else {
-            $errores[] = 'datos incorrectos';
+            $errores[] = 'Datos incorrectos uwu';
         }
     }
 }
@@ -39,7 +39,7 @@ require 'header.php';
 ?>
 
 <section class="seccion">
-    <h1>login</h1>
+    <h1>Login</h1>
 
     <?php if (!empty($errores)) : ?>
         <div class="mensaje error">
@@ -50,13 +50,13 @@ require 'header.php';
     <?php endif; ?>
 
     <form method="post" class="formulario">
-        <label>nombre de usuario</label>
+        <label>Nombre de usuario</label>
         <input type="text" name="nombreUsuario" value="<?php echo limpiar($nombreUsuario); ?>" required>
 
-        <label>contraseña</label>
+        <label>Contraseña</label>
         <input type="password" name="contrasena" required>
 
-        <button type="submit">entrar</button>
+        <button type="submit">Entrar</button>
     </form>
 </section>
 

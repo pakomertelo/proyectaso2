@@ -9,7 +9,7 @@ if (!estaLogeado()) {
 }
 
 $carrito = obtenerCarrito();
-$mensaje = 'accede desde el carrito para comprar';
+$mensaje = 'Accede desde el carrito para comprar';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($carrito)) {
     $stmt = $pdo->prepare('INSERT INTO Compras (id_usuario, id_arma, id_bebida, cantidad) VALUES (?, ?, ?, ?)');
@@ -26,18 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($carrito)) {
     }
 
     vaciarCarrito();
-    $mensaje = 'compra realizada con exito';
+    $mensaje = 'Compra realizada con éxito';
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($carrito)) {
-    $mensaje = 'el carrito esta vacio';
+    $mensaje = 'El carrito esta vacío';
 }
 
 require 'header.php';
 ?>
 
 <section class="seccion">
-    <h1>resultado de compra</h1>
+    <h1>Resultado de compra</h1>
     <p class="mensaje ok"><?php echo limpiar($mensaje); ?></p>
-    <a href="index.php" class="boton-secundario">volver al inicio</a>
+    <a href="index.php" class="boton-secundario">Volver al inicio</a>
 </section>
 
 <?php require 'footer.php'; ?>

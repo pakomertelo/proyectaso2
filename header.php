@@ -42,30 +42,30 @@ if (!empty($idsBebidas)) {
 </head>
 <body>
 <header class="barra-superior">
-    <div class="logo">tienda zombies</div>
+    <a href="index.php" class="logo">Tienda Chombis</a>
     <nav class="menu">
-        <a href="index.php">inicio</a>
-        <a href="mis_compras.php">mis compras</a>
+        <a href="index.php">Inicio</a>
+        <a href="mis_compras.php">Mis compras</a>
         <?php if (estaLogeado()) : ?>
-            <span class="saludo">hola, <?php echo limpiar($_SESSION['nombreUsuario']); ?></span>
-            <a href="logout.php">salir</a>
+            <span class="saludo">Hola, <?php echo limpiar($_SESSION['nombreUsuario']); ?></span>
+            <a href="logout.php">Salir</a>
         <?php else : ?>
-            <a href="login.php">login</a>
-            <a href="registro.php">registro</a>
+            <a href="login.php">Login</a>
+            <a href="registro.php">Registro</a>
         <?php endif; ?>
     </nav>
 </header>
 
-<button id="botonCarrito" class="boton-carrito">carrito (<?php echo totalItemsCarrito(); ?>)</button>
+<button id="botonCarrito" class="boton-carrito">Carrito (<?php echo totalItemsCarrito(); ?>)</button>
 
 <aside id="panelCarrito" class="panel-carrito">
     <div class="panel-cabecera">
-        <h2>tu carrito</h2>
+        <h2>Tu carrito</h2>
         <button id="cerrarCarrito" class="boton-cerrar">x</button>
     </div>
 
     <?php if (empty($carrito)) : ?>
-        <p class="texto-suave">carrito vacio</p>
+        <p class="texto-suave">Carrito vacío</p>
     <?php else : ?>
         <ul class="lista-carrito">
             <?php foreach ($carrito as $item) : ?>
@@ -78,7 +78,7 @@ if (!empty($idsBebidas)) {
                     <div>
                         <strong><?php echo limpiar($nombreItem); ?></strong>
                         <span class="etiqueta"><?php echo limpiar($item['tipo']); ?></span>
-                        <div class="cantidad">cantidad: <?php echo (int) $item['cantidad']; ?></div>
+                        <div class="cantidad">Cantidad: <?php echo (int) $item['cantidad']; ?></div>
                     </div>
                     <div class="acciones-item">
                         <form method="post">
@@ -104,19 +104,19 @@ if (!empty($idsBebidas)) {
             <?php endforeach; ?>
         </ul>
 
-        <div class="panel-total">total items: <?php echo totalItemsCarrito(); ?></div>
+        <div class="panel-total">Total ítems: <?php echo totalItemsCarrito(); ?></div>
 
         <form method="post" class="form-vaciar">
             <input type="hidden" name="accion" value="vaciar">
-            <button type="submit">vaciar carrito</button>
+            <button type="submit">Vaciar carrito</button>
         </form>
 
         <?php if (estaLogeado()) : ?>
             <form method="post" action="comprar.php" class="form-comprar">
-                <button type="submit">comprar</button>
+                <button type="submit">Comprar</button>
             </form>
         <?php else : ?>
-            <a href="login.php" class="boton-login">login para comprar</a>
+            <a href="login.php" class="boton-login">Login para comprar</a>
         <?php endif; ?>
     <?php endif; ?>
 </aside>
