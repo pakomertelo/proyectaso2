@@ -13,6 +13,32 @@ $accion = $_GET['accion'] ?? 'listar';
 $tipo = $_GET['tipo'] ?? '';
 $editId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $errores = [];
+$extensionesPermitidas = ['png', 'jpg', 'webp'];
+
+function normalizarNombreArchivo(string $nombreOriginal): string
+{
+    $base = pathinfo($nombreOriginal, PATHINFO_FILENAME);
+    $base = preg_replace('/[^a-zA-Z0-9_-]+/', '_', $base);
+    $base = trim($base, '_-');
+
+    return $base ?? '';
+}
+
+function esRutaSegura(string $ruta, string $directorioPermitido): bool
+{
+    if (!str_starts_with($ruta, './')) {
+        return false;
+    }
+
+    $rutaCompleta = realpath(__DIR__ . '/' . ltrim($ruta, './'));
+    $directorioCompleto = realpath($directorioPermitido);
+
+    if (!$rutaCompleta || !$directorioCompleto) {
+        return false;
+    }
+
+    return str_starts_with($rutaCompleta, $directorioCompleto . DIRECTORY_SEPARATOR);
+}
 
 $datos = [
     'nombre' => '',
@@ -28,11 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $accionPost = $_POST['accion'] ?? '';
     $tipo = $_POST['tipo'] ?? '';
     $editId = isset($_POST['id']) ? (int) $_POST['id'] : 0;
+    $registroActual = null;
+    $rutaAnterior = '';
+    $imagenSubida = isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE;
 
     $datos = [
         'nombre' => trim($_POST['nombre'] ?? ''),
         'coste' => trim($_POST['coste'] ?? ''),
-        'path' => trim($_POST['path'] ?? ''),
+        'path' => '',
         'clase' => trim($_POST['clase'] ?? ''),
         'nombre_pap' => trim($_POST['nombre_pap'] ?? ''),
         'es_wonder_weapon' => isset($_POST['es_wonder_weapon']) ? 1 : 0,
@@ -61,27 +90,126 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($datos['nombre'] === '') {
-            $errores[] = 'El nombre es obligatorio';
+            $errores[] = 'Falta nombre';
         }
 
-        if ($datos['coste'] === '' || !is_numeric($datos['coste']) || (float) $datos['coste'] < 0) {
+        if ($datos['coste'] === '') {
+            $errores[] = 'Falta coste';
+        } elseif (!is_numeric($datos['coste'])) {
             $errores[] = 'El coste debe ser un número válido';
+        } elseif ((float) $datos['coste'] < 0) {
+            $errores[] = 'El coste no puede ser negativo';
         }
 
-        if ($datos['path'] === '') {
-            $errores[] = 'La ruta de la imagen es obligatoria';
+        if ($accionPost === 'crear') {
+            if (!isset($_FILES['imagen']) || $_FILES['imagen']['error'] === UPLOAD_ERR_NO_FILE) {
+                $errores[] = 'Falta imagen';
+            } elseif ($_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+                $errores[] = 'Error al subir la imagen';
+            }
+        } elseif ($imagenSubida && $_FILES['imagen']['error'] !== UPLOAD_ERR_OK) {
+            $errores[] = 'Error al subir la imagen';
         }
 
         if ($tipo === 'arma' && $datos['clase'] === '') {
-            $errores[] = 'La clase es obligatoria para armas';
+            $errores[] = 'Falta clase';
         }
 
         if ($tipo === 'bebida' && $datos['efecto'] === '') {
-            $errores[] = 'El efecto es obligatorio para bebidas';
+            $errores[] = 'Falta efecto';
         }
 
         if ($accionPost === 'editar' && $editId <= 0) {
             $errores[] = 'Producto inválido para editar';
+        }
+
+        if ($accionPost === 'editar' && $editId > 0 && in_array($tipo, ['arma', 'bebida'], true)) {
+            if ($tipo === 'arma') {
+                $stmt = $pdo->prepare('SELECT path FROM Armas WHERE id_arma = ?');
+            } else {
+                $stmt = $pdo->prepare('SELECT path FROM Bebidas WHERE id_bebida = ?');
+            }
+            $stmt->execute([$editId]);
+            $registroActual = $stmt->fetch();
+
+            if (!$registroActual) {
+                $errores[] = 'Producto inválido para editar';
+            } else {
+                $rutaAnterior = $registroActual['path'] ?? '';
+                $datos['path'] = $rutaAnterior;
+            }
+        }
+
+        if ($datos['nombre'] !== '' && in_array($tipo, ['arma', 'bebida'], true)) {
+            if ($tipo === 'arma') {
+                $query = 'SELECT COUNT(*) FROM Armas WHERE nombre = ?';
+                $params = [$datos['nombre']];
+                if ($accionPost === 'editar') {
+                    $query .= ' AND id_arma != ?';
+                    $params[] = $editId;
+                }
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($params);
+                if ((int) $stmt->fetchColumn() > 0) {
+                    $errores[] = 'Ya existe un arma con ese nombre';
+                }
+            } else {
+                $query = 'SELECT COUNT(*) FROM Bebidas WHERE nombre = ?';
+                $params = [$datos['nombre']];
+                if ($accionPost === 'editar') {
+                    $query .= ' AND id_bebida != ?';
+                    $params[] = $editId;
+                }
+                $stmt = $pdo->prepare($query);
+                $stmt->execute($params);
+                if ((int) $stmt->fetchColumn() > 0) {
+                    $errores[] = 'Ya existe una bebida con ese nombre';
+                }
+            }
+        }
+
+        if ($imagenSubida) {
+            $nombreOriginal = $_FILES['imagen']['name'] ?? '';
+            $extension = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+            $nombreLimpio = normalizarNombreArchivo($nombreOriginal);
+
+            if ($nombreLimpio === '') {
+                $errores[] = 'Nombre de archivo inválido';
+            }
+
+            if (!in_array($extension, $extensionesPermitidas, true)) {
+                $errores[] = 'Formato de imagen no permitido (png, jpg, webp)';
+            }
+        }
+
+        if (empty($errores)) {
+            $directorioBase = $tipo === 'arma' ? __DIR__ . '/weapons' : __DIR__ . '/perks';
+            $prefijoRuta = $tipo === 'arma' ? './weapons/' : './perks/';
+
+            if ($imagenSubida) {
+                if (!is_dir($directorioBase)) {
+                    if (!mkdir($directorioBase, 0755, true) && !is_dir($directorioBase)) {
+                        $errores[] = 'No se pudo crear la carpeta de imágenes';
+                    }
+                }
+
+                if (empty($errores)) {
+                    $nombreOriginal = $_FILES['imagen']['name'] ?? '';
+                    $extension = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+                    $nombreLimpio = normalizarNombreArchivo($nombreOriginal);
+                    $nombreArchivo = $nombreLimpio . '.' . $extension;
+                    $rutaDestino = $directorioBase . '/' . $nombreArchivo;
+                    $rutaRelativa = $prefijoRuta . $nombreArchivo;
+
+                    if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaDestino)) {
+                        $errores[] = 'No se pudo guardar la imagen';
+                    } else {
+                        $datos['path'] = $rutaRelativa;
+                    }
+                }
+            } else {
+                $datos['path'] = $rutaAnterior;
+            }
         }
 
         if (empty($errores)) {
@@ -112,6 +240,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $editId
                     ]);
 
+                    $rutaAnteriorCompleta = __DIR__ . '/' . ltrim($rutaAnterior, './');
+                    if ($imagenSubida && $rutaAnterior !== '' && esRutaSegura($rutaAnterior, __DIR__ . '/weapons') && is_file($rutaAnteriorCompleta)) {
+                        unlink($rutaAnteriorCompleta);
+                    }
+
                     redirigir('admin_productos.php?mensaje=actualizado');
                 }
             }
@@ -136,6 +269,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $datos['path'],
                         $editId
                     ]);
+
+                    $rutaAnteriorCompleta = __DIR__ . '/' . ltrim($rutaAnterior, './');
+                    if ($imagenSubida && $rutaAnterior !== '' && esRutaSegura($rutaAnterior, __DIR__ . '/perks') && is_file($rutaAnteriorCompleta)) {
+                        unlink($rutaAnteriorCompleta);
+                    }
 
                     redirigir('admin_productos.php?mensaje=actualizado');
                 }
@@ -267,7 +405,7 @@ require 'header.php';
     <section class="seccion">
         <h2><?php echo $accion === 'crear' ? 'Añadir' : 'Editar'; ?> <?php echo $tipo === 'arma' ? 'arma' : 'bebida'; ?></h2>
 
-        <form method="post" class="formulario">
+        <form method="post" class="formulario" enctype="multipart/form-data">
             <input type="hidden" name="accion" value="<?php echo $accion; ?>">
             <input type="hidden" name="tipo" value="<?php echo limpiar($tipo); ?>">
             <?php if ($accion === 'editar') : ?>
@@ -275,17 +413,20 @@ require 'header.php';
             <?php endif; ?>
 
             <label>Nombre</label>
-            <input type="text" name="nombre" value="<?php echo limpiar($datos['nombre']); ?>" required>
+            <input type="text" name="nombre" value="<?php echo limpiar($datos['nombre']); ?>">
 
             <label>Coste</label>
-            <input type="number" name="coste" min="0" step="0.01" value="<?php echo limpiar($datos['coste']); ?>" required>
+            <input type="number" name="coste" min="0" step="0.01" value="<?php echo limpiar($datos['coste']); ?>">
 
-            <label>Ruta imagen (path)</label>
-            <input type="text" name="path" value="<?php echo limpiar($datos['path']); ?>" required>
+            <label>Imagen</label>
+            <input type="file" name="imagen" accept=".png,.jpg,.webp">
+            <?php if ($accion === 'editar' && $datos['path'] !== '') : ?>
+                <p class="texto-suave">Actual: <?php echo limpiar($datos['path']); ?></p>
+            <?php endif; ?>
 
             <?php if ($tipo === 'arma') : ?>
                 <label>Clase</label>
-                <input type="text" name="clase" value="<?php echo limpiar($datos['clase']); ?>" required>
+                <input type="text" name="clase" value="<?php echo limpiar($datos['clase']); ?>">
 
                 <label>Nombre PaP</label>
                 <input type="text" name="nombre_pap" value="<?php echo limpiar($datos['nombre_pap']); ?>">
@@ -298,7 +439,7 @@ require 'header.php';
 
             <?php if ($tipo === 'bebida') : ?>
                 <label>Efecto</label>
-                <input type="text" name="efecto" value="<?php echo limpiar($datos['efecto']); ?>" required>
+                <input type="text" name="efecto" value="<?php echo limpiar($datos['efecto']); ?>">
             <?php endif; ?>
 
             <button type="submit"><?php echo $accion === 'crear' ? 'Crear' : 'Actualizar'; ?></button>
